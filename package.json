@@ -1,0 +1,16 @@
+{
+  "name": "gamerverse",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
+    "build": "npm:build:client && npm:build:server",
+    "lint": "npm:lint:client && npm:lint:server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
