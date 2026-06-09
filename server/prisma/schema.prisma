@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  username       String        @unique
+  password       String
+  avatarUrl      String?       
+  bio            String?       @db.Text
+  favoriteGames  String[]      @default([])
+  rank           String        @default("Rookie")
+  level          Int           @default(1)
+  xp             Int           @default(0)
+  badges         String[]      @default([])
+  role           Role          @default(USER)
+  isVerified     Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  posts          Post[]
+  comments       Comment[]
+  friends        Friend[]      @relation("FriendOwner")
+  friendOf       Friend[]      @relation("FriendTarget")
+  sentRequests   FriendRequest[]
+  receivedRequests FriendRequest[]
+  messages       Message[]     @relation("MessageAuthor")
+  sentMessages   Message[]     @relation("MessageSender")
+  clans          ClanMember[]
+  notifications  Notification[]
+  tournaments    TournamentParticipant[]
+  reports        Report[]      @relation("Reporter")
+  reportedItems  Report[]      @relation("ReportedUser")
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+model Post {
+  id           String       @id @default(cuid())
+  author       User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId     String
+  content      String       @db.Text
+  mediaUrls    String[]     @default([])
+  likes        Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  comments     Comment[]
+  tags         String[]     @default([])
+  isTrending   Boolean      @default(false)
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String
+  content   String    @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Friend {
+  id        String   @id @default(cuid())
+  owner     User     @relation("FriendOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  friend    User     @relation("FriendTarget", fields: [friendId], references: [id], onDelete: Cascade)
+  friendId  String
+  createdAt DateTime @default(now())
+  @@unique([ownerId, friendId])
+}
+
+model FriendRequest {
+  id          String   @id @default(cuid())
+  sender      User     @relation("RequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId    String
+  receiver    User     @relation("RequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId  String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([senderId, receiverId])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  sender      User      @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId    String
+  recipient   User?     @relation("MessageAuthor", fields: [recipientId], references: [id], onDelete: Cascade)
+  recipientId String?
+  clan        Clan?     @relation(fields: [clanId], references: [id], onDelete: Cascade)
+  clanId      String?
+  content     String    @db.Text
+  mediaUrls   String[]  @default([])
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model Clan {
+  id           String         @id @default(cuid())
+  name         String         @unique
+  tag          String         @unique
+  description  String         @db.Text
+  avatarUrl    String?
+  bannerUrl    String?
+  visibility   ClanVisibility @default(PUBLIC)
+  createdBy    User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String
+  members      ClanMember[]
+  announcements ClanAnnouncement[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+enum ClanVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+model ClanMember {
+  id       String      @id @default(cuid())
+  clan     Clan        @relation(fields: [clanId], references: [id], onDelete: Cascade)
+  clanId   String
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  role     ClanRole    @default(MEMBER)
+  joinedAt DateTime    @default(now())
+  @@unique([clanId, userId])
+}
+
+enum ClanRole {
+  MEMBER
+  OFFICER
+  LEADER
+}
+
+model ClanAnnouncement {
+  id        String   @id @default(cuid())
+  clan      Clan     @relation(fields: [clanId], references: [id], onDelete: Cascade)
+  clanId    String
+  title     String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Tournament {
+  id             String                 @id @default(cuid())
+  title          String
+  description    String                 @db.Text
+  game           String
+  type           TournamentType         @default(SINGLES)
+  status         TournamentStatus       @default(REGISTRATION)
+  startDate      DateTime
+  endDate        DateTime
+  organizer      User                   @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId    String
+  participants   TournamentParticipant[]
+  brackets       TournamentBracket[]
+  leaderboard    TournamentLeaderboard[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+}
+
+enum TournamentType {
+  SINGLES
+  DOUBLES
+  TEAM
+}
+
+enum TournamentStatus {
+  REGISTRATION
+  ONGOING
+  COMPLETED
+}
+
+model TournamentParticipant {
+  id            String      @id @default(cuid())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId  String
+  joinedAt      DateTime    @default(now())
+  placement     Int?        
+  isEliminated  Boolean     @default(false)
+  @@unique([userId, tournamentId])
+}
+
+model TournamentBracket {
+  id            String      @id @default(cuid())
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId  String
+  round         Int
+  matchNumber   Int
+  participants  String[]    @default([])
+  winnerId      String?
+}
+
+model TournamentLeaderboard {
+  id            String      @id @default(cuid())
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId  String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  points        Int         @default(0)
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  type        NotificationType
+  title       String
+  body        String   @db.Text
+  data        Json?
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+enum NotificationType {
+  FRIEND_REQUEST
+  MESSAGE
+  COMMENT
+  LIKE
+  TOURNAMENT
+  ANNOUNCEMENT
+}
+
+model Report {
+  id          String    @id @default(cuid())
+  reporter    User      @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reporterId  String
+  reportedUser User?    @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  reportedUserId String?
+  reason      String    @db.Text
+  resolved    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

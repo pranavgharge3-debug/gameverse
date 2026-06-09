@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dark-bg: #0a0e27;
+  --dark-card: #1a1f3a;
+  --purple-primary: #8b5cf6;
+  --purple-dark: #7c3aed;
+  --cyan-accent: #06b6d4;
+  --magenta-accent: #ec4899;
+  --neon-purple: #a855f7;
+}
+
+* {
+  @apply transition-colors duration-200;
+}
+
+body {
+  @apply bg-dark-bg text-white;
+}
+
+.glass {
+  @apply backdrop-blur-md bg-white/10 border border-white/20;
+}
+
+.btn-primary {
+  @apply px-6 py-2 bg-gradient-to-r from-purple-primary to-purple-dark text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-primary/50 transition-all;
+}
+
+.btn-secondary {
+  @apply px-6 py-2 border-2 border-purple-primary text-purple-primary rounded-lg font-semibold hover:bg-purple-primary/10 transition-all;
+}
+
+.card {
+  @apply bg-dark-card rounded-lg border border-white/10 p-4;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-purple-primary via-magenta-accent to-cyan-accent bg-clip-text text-transparent;
+}

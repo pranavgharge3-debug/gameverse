@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { motion } from 'framer-motion';
+export function PostCard({ id, author, content, mediaUrls, likes, onLike }) {
+    return (_jsxs(motion.div, { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, className: "card space-y-4", children: [_jsxs("div", { className: "flex items-center gap-3", children: [author.avatarUrl ? (_jsx("img", { src: author.avatarUrl, alt: author.username, className: "w-10 h-10 rounded-full" })) : (_jsx("div", { className: "w-10 h-10 rounded-full bg-purple-primary/20 flex items-center justify-center", children: author.username[0] })), _jsx("span", { className: "font-semibold", children: author.username })] }), _jsx("p", { className: "text-gray-300", children: content }), mediaUrls && mediaUrls.length > 0 && (_jsx("div", { className: "grid grid-cols-2 gap-2", children: mediaUrls.slice(0, 4).map((url, idx) => (_jsx("img", { src: url, alt: "Post media", className: "rounded-lg w-full h-40 object-cover" }, idx))) })), _jsxs("button", { onClick: () => onLike(id), className: "btn-primary text-sm w-full", children: ["\u2764\uFE0F Like (", likes, ")"] })] }));
+}
+//# sourceMappingURL=PostCard.js.map
