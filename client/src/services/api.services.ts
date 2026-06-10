@@ -100,3 +100,28 @@ export const tournamentAPI = {
     return res.data;
   },
 };
+
+export const messageAPI = {
+  sendMessage: async (recipientId?: string, clanId?: string, content: string, mediaUrls?: string[]) => {
+    const res = await api.post('/messages', { recipientId, clanId, content, mediaUrls });
+    return res.data;
+  },
+  getMessages: async (recipientId?: string, clanId?: string, limit?: number, offset?: number) => {
+    const res = await api.get('/messages', {
+      params: { recipientId, clanId, limit, offset },
+    });
+    return res.data;
+  },
+  markAsRead: async (messageId: string) => {
+    const res = await api.patch(`/messages/${messageId}/read`);
+    return res.data;
+  },
+  getConversations: async () => {
+    const res = await api.get('/messages/conversations');
+    return res.data;
+  },
+  getClanConversations: async () => {
+    const res = await api.get('/messages/conversations/clans');
+    return res.data;
+  },
+};

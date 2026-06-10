@@ -11,6 +11,7 @@ import { clanRoutes } from './routes/clan.routes';
 import { tournamentRoutes } from './routes/tournament.routes';
 import { notificationRoutes } from './routes/notification.routes';
 import { adminRoutes } from './routes/admin.routes';
+import { messageRoutes } from './routes/message.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { rateLimiter } from './middleware/rateLimit.middleware';
 
@@ -36,5 +37,6 @@ app.use('/api/clans', clanRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/messages', messageRoutes);
 
 app.use(errorHandler);
