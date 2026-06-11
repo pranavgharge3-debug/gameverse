@@ -27,10 +27,13 @@ model User {
   comments       Comment[]
   friends        Friend[]      @relation("FriendOwner")
   friendOf       Friend[]      @relation("FriendTarget")
-  sentRequests   FriendRequest[]
-  receivedRequests FriendRequest[]
+  sentRequests   FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
   messages       Message[]     @relation("MessageAuthor")
   sentMessages   Message[]     @relation("MessageSender")
+  createdClans   Clan[]       @relation("ClanCreator")
+  organizedTournaments Tournament[] @relation("TournamentOrganizer")
+  tournamentLeaderboards TournamentLeaderboard[] @relation("TournamentLeaderboardUser")
   clans          ClanMember[]
   notifications  Notification[]
   tournaments    TournamentParticipant[]
@@ -81,9 +84,9 @@ model Friend {
 
 model FriendRequest {
   id          String   @id @default(cuid())
-  sender      User     @relation("RequestSender", fields: [senderId], references: [id], onDelete: Cascade)
+  sender      User     @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
   senderId    String
-  receiver    User     @relation("RequestReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiver    User     @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId  String
   status      RequestStatus @default(PENDING)
   createdAt   DateTime @default(now())
@@ -119,9 +122,10 @@ model Clan {
   avatarUrl    String?
   bannerUrl    String?
   visibility   ClanVisibility @default(PUBLIC)
-  createdBy    User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  createdBy    User           @relation("ClanCreator", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId      String
   members      ClanMember[]
+  messages     Message[]
   announcements ClanAnnouncement[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -168,7 +172,7 @@ model Tournament {
   status         TournamentStatus       @default(REGISTRATION)
   startDate      DateTime
   endDate        DateTime
-  organizer      User                   @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  organizer      User                   @relation("TournamentOrganizer", fields: [organizerId], references: [id], onDelete: Cascade)
   organizerId    String
   participants   TournamentParticipant[]
   brackets       TournamentBracket[]
@@ -215,7 +219,7 @@ model TournamentLeaderboard {
   id            String      @id @default(cuid())
   tournament    Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId  String
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User        @relation("TournamentLeaderboardUser", fields: [userId], references: [id], onDelete: Cascade)
   userId        String
   points        Int         @default(0)
 }
