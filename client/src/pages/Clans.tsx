@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { clanAPI } from '../services/api.services';
+import { FiSearch, FiUsers, FiShield, FiPlus, FiLock, FiGlobe } from 'react-icons/fi';
 
 interface Clan {
   id: string;
@@ -66,136 +67,173 @@ export default function Clans() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-      {/* Clan Directory Column */}
-      <div className="lg:col-span-2 space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h2 className="text-3xl font-bold">Clan Directories</h2>
-            <p className="text-gray-400 text-sm">Find and align with top gaming teams</p>
-          </div>
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Esports Clans</h1>
+        <p className="text-gray-400">Find your team and dominate the competition</p>
+      </div>
 
-          <form onSubmit={handleSearchSubmit} className="flex gap-2 w-full sm:w-auto">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white text-sm"
-              placeholder="Search by name or tag..."
-            />
-            <button type="submit" className="btn-primary py-2 px-4 text-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Clan Directory */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="flex gap-3">
+            <div className="flex-grow relative">
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-12 pr-4 py-3"
+                placeholder="Search clans by name or tag..."
+              />
+            </div>
+            <button type="submit" className="btn-primary px-6">
               Search
             </button>
           </form>
-        </div>
 
-        {/* Clan List */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {clans.length === 0 ? (
-            <div className="col-span-2 text-center py-12 text-gray-500 card glass">
-              <p>No clans found matching your search.</p>
-            </div>
-          ) : (
-            clans.map((clan) => (
-              <div key={clan.id} className="card glass p-6 flex flex-col justify-between border-white/5 space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="px-2 py-0.5 bg-purple-primary/20 border border-purple-primary/30 rounded text-xs font-bold text-purple-primary">
-                      [{clan.tag.toUpperCase()}]
-                    </span>
-                    <span className="text-[10px] text-gray-400 uppercase tracking-wider">
-                      {clan.visibility}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold">{clan.name}</h3>
-                  <p className="text-gray-400 text-xs line-clamp-3 leading-relaxed">
-                    {clan.description}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center pt-2">
-                  <span className="text-xs text-cyan-accent font-semibold">
-                    🛡️ {clan.members?.length || 0} Members
-                  </span>
-                  <button
-                    onClick={() => handleJoinClan(clan.id)}
-                    className="btn-secondary py-1 px-4 text-xs font-semibold"
-                  >
-                    Join Clan
-                  </button>
-                </div>
+          {/* Clan Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {clans.length === 0 ? (
+              <div className="col-span-2 card p-12 text-center">
+                <div className="text-5xl mb-4">🛡️</div>
+                <p className="text-gray-400">No clans found. Be the first to create one!</p>
               </div>
-            ))
-          )}
+            ) : (
+              clans.map((clan) => (
+                <div key={clan.id} className="card p-6 space-y-4 hover:border-purple-primary/30 transition-all">
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-primary to-purple-dark flex items-center justify-center font-bold text-white">
+                        {clan.tag.toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold">{clan.name}</h3>
+                        <div className="flex items-center gap-2 text-sm">
+                          {clan.visibility === 'PRIVATE' ? (
+                            <span className="flex items-center gap-1 text-gray-400">
+                              <FiLock size={14} />
+                              Private
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-cyan-accent">
+                              <FiGlobe size={14} />
+                              Public
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-gray-400 text-sm line-clamp-2">{clan.description}</p>
+
+                  {/* Footer */}
+                  <div className="flex justify-between items-center pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <FiUsers size={16} />
+                      <span>{clan.members?.length || 0} Members</span>
+                    </div>
+                    <button
+                      onClick={() => handleJoinClan(clan.id)}
+                      className="btn-secondary py-2 px-4 text-sm"
+                    >
+                      Join Clan
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Creation Widget */}
-      <div className="card glass p-8 space-y-6 self-start">
-        <h3 className="text-xl font-bold gradient-text">Create Clan</h3>
-        {error && <p className="text-red-400 text-sm">{error}</p>}
-
-        <form onSubmit={handleCreateClan} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="name">Clan Name</label>
-            <input
-              id="name"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white text-sm"
-              placeholder="e.g. Sentinels"
-            />
+        {/* Create Clan Form */}
+        <div className="card p-6 space-y-6 h-fit sticky top-24">
+          <div className="flex items-center gap-2">
+            <FiPlus size={20} className="text-purple-primary" />
+            <h3 className="text-xl font-bold">Create Clan</h3>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="tag">Clan Tag (3-4 characters)</label>
-            <input
-              id="tag"
-              type="text"
-              required
-              maxLength={4}
-              value={tag}
-              onChange={(e) => setTag(e.target.value)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white text-sm"
-              placeholder="e.g. SEN"
-            />
-          </div>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-500 p-3 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
 
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="desc">Description</label>
-            <textarea
-              id="desc"
-              required
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full h-24 p-3 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white text-sm resize-none"
-              placeholder="What is the objective of this clan?"
-            />
-          </div>
+          <form onSubmit={handleCreateClan} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300" htmlFor="name">Clan Name</label>
+              <input
+                id="name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Sentinels"
+              />
+            </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="visibility">Visibility</label>
-            <select
-              id="visibility"
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value as any)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white text-sm"
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300" htmlFor="tag">Clan Tag (3-4 chars)</label>
+              <input
+                id="tag"
+                type="text"
+                required
+                maxLength={4}
+                value={tag}
+                onChange={(e) => setTag(e.target.value)}
+                placeholder="e.g. SEN"
+                className="uppercase"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300" htmlFor="desc">Description</label>
+              <textarea
+                id="desc"
+                required
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="h-24 resize-none"
+                placeholder="What is your clan's mission?"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300" htmlFor="visibility">Visibility</label>
+              <select
+                id="visibility"
+                value={visibility}
+                onChange={(e) => setVisibility(e.target.value as any)}
+              >
+                <option value="PUBLIC">Public - Anyone can join</option>
+                <option value="PRIVATE">Private - Invite only</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary py-3 w-full flex items-center justify-center gap-2"
             >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private (Invite only)</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full btn-primary py-2.5 text-sm"
-          >
-            {loading ? 'Creating Clan...' : 'Create Clan'}
-          </button>
-        </form>
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <FiShield size={18} />
+                  Create Clan
+                </>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

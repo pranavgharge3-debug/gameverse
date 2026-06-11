@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../stores/auth.store';
 import { authAPI } from '../services/api.services';
+import { FiUser, FiMail, FiLock, FiUserPlus, FiLogIn } from 'react-icons/fi';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -30,81 +31,123 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh]">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-dark-bg via-black to-dark-bg" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,182,212,0.1),transparent_70%)]" />
+      
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="card glass max-w-md w-full p-8 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 w-full max-w-md px-6"
       >
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl font-bold">Create Identity</h2>
-          <p className="text-gray-400 text-sm">Join the GamerVerse social network</p>
+        <div className="card glass p-8 space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-accent to-purple-primary mb-4">
+              <span className="text-2xl font-bold text-white">GV</span>
+            </div>
+            <h1 className="text-3xl font-bold">Create Your Identity</h1>
+            <p className="text-gray-400">Join the ultimate gaming social platform</p>
+          </div>
+
+          {/* Error Display */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/10 border border-red-500/30 text-red-500 p-4 rounded-xl text-sm text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300 flex items-center gap-2" htmlFor="username">
+                <FiUser size={16} />
+                Gamer Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                required
+                minLength={3}
+                maxLength={32}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. Shroud"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300 flex items-center gap-2" htmlFor="email">
+                <FiMail size={16} />
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="gamer@verse.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-300 flex items-center gap-2" htmlFor="password">
+                <FiLock size={16} />
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min. 8 characters"
+              />
+            </div>
+
+            <div className="flex items-start gap-2 text-xs text-gray-400">
+              <input type="checkbox" required className="mt-1 rounded border-white/20 bg-gray-900" />
+              <span>
+                I agree to the <Link to="/terms" className="text-purple-primary hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-purple-primary hover:underline">Privacy Policy</Link>
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full btn-primary py-4 flex items-center justify-center gap-2 text-lg"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                <>
+                  <FiUserPlus size={20} />
+                  Join GamerVerse
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Login Link */}
+          <p className="text-center text-sm text-gray-400">
+            Already have an account?{' '}
+            <Link to="/login" className="text-purple-primary hover:text-purple-light transition-colors font-semibold inline-flex items-center gap-1">
+              <FiLogIn size={16} />
+              Sign In
+            </Link>
+          </p>
         </div>
-
-        {error && (
-          <div className="bg-red-500/20 border border-red-500/40 text-red-300 p-3 rounded-lg text-sm text-center">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="username">Gamer Username</label>
-            <input
-              id="username"
-              type="text"
-              required
-              minLength={3}
-              maxLength={32}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white"
-              placeholder="e.g. Shroud"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white"
-              placeholder="shroud@gmail.com"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-sm font-semibold text-gray-300" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-dark-bg/60 border border-white/10 rounded-lg focus:outline-none focus:border-purple-primary text-white"
-              placeholder="Min. 8 characters"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full btn-primary py-2.5 mt-2 flex items-center justify-center"
-          >
-            {loading ? 'Creating Identity...' : 'Join GamerVerse'}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gray-400">
-          Already registered?{' '}
-          <Link to="/login" className="text-purple-primary hover:underline font-semibold">
-            Log In
-          </Link>
-        </p>
       </motion.div>
     </div>
   );

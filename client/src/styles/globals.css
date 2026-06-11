@@ -3,13 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --dark-bg: #0a0e27;
-  --dark-card: #1a1f3a;
+  --dark-bg: #09090b;
+  --dark-darker: #050507;
+  --dark-card: #0f0f14;
+  --dark-elevated: #18181f;
+  --dark-hover: #1f1f28;
   --purple-primary: #8b5cf6;
   --purple-dark: #7c3aed;
+  --purple-light: #a78bfa;
+  --purple-glow: rgba(139, 92, 246, 0.5);
   --cyan-accent: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.5);
   --magenta-accent: #ec4899;
-  --neon-purple: #a855f7;
+  --magenta-glow: rgba(236, 72, 153, 0.5);
+  --yellow-accent: #f59e0b;
+  --green-success: #10b981;
+  --red-danger: #ef4444;
 }
 
 * {
@@ -18,24 +27,127 @@
 
 body {
   @apply bg-dark-bg text-white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .glass {
-  @apply backdrop-blur-md bg-white/10 border border-white/20;
+  @apply backdrop-blur-xl bg-dark-card/70 border border-white/5;
 }
 
 .btn-primary {
-  @apply px-6 py-2 bg-gradient-to-r from-purple-primary to-purple-dark text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-primary/50 transition-all;
+  @apply px-7 py-3 bg-gradient-to-r from-purple-primary to-purple-dark text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-primary/40 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .btn-secondary {
-  @apply px-6 py-2 border-2 border-purple-primary text-purple-primary rounded-lg font-semibold hover:bg-purple-primary/10 transition-all;
+  @apply px-7 py-3 border border-white/10 text-white rounded-xl font-semibold hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .card {
-  @apply bg-dark-card rounded-lg border border-white/10 p-4;
+  @apply bg-dark-card rounded-2xl border border-white/5 p-6 transition-all duration-300 hover:border-white/10 hover:shadow-xl hover:shadow-black/40;
 }
 
 .gradient-text {
   @apply bg-gradient-to-r from-purple-primary via-magenta-accent to-cyan-accent bg-clip-text text-transparent;
+}
+
+.gradient-text-purple {
+  @apply bg-gradient-to-r from-purple-primary to-purple-400 bg-clip-text text-transparent;
+}
+
+.gradient-text-cyan {
+  @apply bg-gradient-to-r from-cyan-accent to-purple-primary bg-clip-text text-transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-black;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/20;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Input Styles */
+input, textarea, select {
+  @apply bg-gray-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 focus:outline-none focus:border-purple-primary focus:ring-2 focus:ring-purple-primary/20;
+}
+
+/* Badge Styles */
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider;
+}
+
+.badge-purple {
+  @apply bg-purple-primary/20 text-purple-primary border border-purple-primary/30;
+}
+
+.badge-cyan {
+  @apply bg-cyan-accent/20 text-cyan-accent border border-cyan-accent/30;
+}
+
+.badge-magenta {
+  @apply bg-magenta-accent/20 text-magenta-accent border border-magenta-accent/30;
+}
+
+.badge-green {
+  @apply bg-emerald-500/20 text-emerald-500 border border-emerald-500/30;
+}
+
+.badge-red {
+  @apply bg-red-500/20 text-red-500 border border-red-500/30;
 }
